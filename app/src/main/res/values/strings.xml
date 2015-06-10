@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Music Player</string>
+    <string name="artist_search_hint">Search Artist</string>
+    <string name="action_settings">Settings</string>
+</resources>

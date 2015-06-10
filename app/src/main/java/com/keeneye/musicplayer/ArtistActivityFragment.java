@@ -14,7 +14,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 
 /**
@@ -63,7 +66,7 @@ public class ArtistActivityFragment extends Fragment {
 
     }
 
-    private class GetArtist extends AsyncTask<String,Void,String>
+    private class GetArtist extends AsyncTask<String,Void,ArrayList<Artist>>
     {
 
         private final String TAG = GetArtist.class.getSimpleName();
@@ -71,7 +74,7 @@ public class ArtistActivityFragment extends Fragment {
         Get the json string from Spotify and parse it.
          */
         @Override
-        protected String doInBackground(String... params) {
+        protected ArrayList<Artist> doInBackground(String... params) {
 
             //Build url
             HttpURLConnection urlConnection=null;
@@ -148,9 +151,71 @@ public class ArtistActivityFragment extends Fragment {
            return null;
         }
 
-        private String getArtistDetailsFromJson(String artistJson) throws JSONException
+        @Override
+        protected void onPostExecute(ArrayList<Artist> artists) {
+            if (artists!=null)
+            {
+                Log.d(TAG,"Succesfully added");
+            }
+        }
+
+        private ArrayList<Artist> getArtistDetailsFromJson(String artistJson) throws JSONException
         {
-            return null;
+
+            final String type_name="artists";
+            final String artists="items";
+            final String name="name";
+            final String id = "id";
+            final String img = "images";
+
+            ArrayList<Artist> artistObject= new ArrayList<Artist>();
+
+            JSONObject artistsJsonObject = new JSONObject(artistJson);
+            JSONObject artistsObject= artistsJsonObject.getJSONObject(type_name);
+            JSONArray artistArray = artistsObject.getJSONArray(artists);
+
+            for (int i=0;i<artistArray.length();i++)
+            {
+                String artistName = artistArray.getJSONObject(i).getString(name);
+                String artistId = artistArray.getJSONObject(i).getString(id);
+                JSONArray artistImgArray = artistArray.getJSONObject(i).getJSONArray(img);
+                String artistImg =null;
+                if(artistImgArray.length()>0) {
+                    artistImg = artistImgArray.getJSONObject(artistImgArray.length() - 1).getString("url");
+                }
+                artistObject.add(new Artist(artistName,artistId,artistImg));
+                Log.i(TAG,artistName+" "+artistId+" "+artistImg);
+            }
+
+
+            return artistObject;
+        }
+    }
+
+    public class Artist
+    {
+        /*Class to store Artist Data*/
+        private String name;
+        private String id;
+        private String imgUrl;
+
+        public Artist(String name,String id,String imgUrl)
+        {
+            this.name=name;
+            this.id=id;
+            this.imgUrl=imgUrl;
+        }
+
+        String getName() {
+            return this.name;
+        }
+
+        String getId(){
+            return this.id;
+        }
+
+        String getImgUrl(){
+            return this.imgUrl;
         }
     }
 

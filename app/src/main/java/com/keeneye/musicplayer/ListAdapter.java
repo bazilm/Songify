@@ -1,7 +1,7 @@
 package com.keeneye.musicplayer;
 
 import android.content.Context;
-import android.net.Uri;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +17,19 @@ import java.util.ArrayList;
 
 public class ListAdapter extends ArrayAdapter<GetArtist.Artist> {
 
+
     private Context context;
     private ArrayList<GetArtist.Artist> artists= new ArrayList<GetArtist.Artist>();
+    public ImageView imageView;
+
+
 
     public ListAdapter(Context context, ArrayList<GetArtist.Artist> values) {
         super(context, -1,values);
         this.context=context;
         this.artists=values;
+
+
     }
 
 
@@ -33,10 +39,17 @@ public class ListAdapter extends ArrayAdapter<GetArtist.Artist> {
 
         View rowView = inflater.inflate(R.layout.list_item,parent,false);
         TextView textView = (TextView)rowView.findViewById(R.id.list_name_item);
-        ImageView imageView =(ImageView) rowView.findViewById(R.id.list_image_item);
+        imageView =(ImageView) rowView.findViewById(R.id.list_image_item);
+        ArtistActivity artistActivity = ((ArtistActivity)context);
         textView.setText(artists.get(position).getName());
-        if(artists.get(position).getImgUrl()!=null)
-        imageView.setImageURI(Uri.parse(artists.get(position).getImgUrl()));
+        Bitmap image = artistActivity.getBitmapFromCache(Integer.toString(position));
+        if (image==null) {
+            artistActivity.addToCache(Integer.toString(position), artists.get(position).getImage());
+            image = artists.get(position).getImage();
+        }
+
+        imageView.setImageBitmap(image);
+
         return rowView;
     }
 }

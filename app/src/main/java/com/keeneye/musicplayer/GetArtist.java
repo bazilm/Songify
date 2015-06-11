@@ -1,5 +1,7 @@
 package com.keeneye.musicplayer;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -13,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -27,6 +30,13 @@ public class GetArtist extends AsyncTask<String,Void,ArrayList<GetArtist.Artist>
     /*
     Get the json string from Spotify and parse it.
      */
+    ArtistActivity artistActivity=null;
+
+    public GetArtist(ArtistActivity artistActivity)
+    {
+        this.artistActivity=artistActivity;
+    }
+
     @Override
     protected ArrayList<Artist> doInBackground(String... params) {
 
@@ -36,13 +46,17 @@ public class GetArtist extends AsyncTask<String,Void,ArrayList<GetArtist.Artist>
         String artistJson=null;
 
 
+
+
         try {
             String type = "artist";
             String artist = params[0];
+            String limit = "10";
 
             String base_url = "https://api.spotify.com/v1/search";
 
-            Uri uri = Uri.parse(base_url).buildUpon().appendQueryParameter("q", artist).appendQueryParameter("type", type).build();
+            Uri uri = Uri.parse(base_url).buildUpon().appendQueryParameter("q", artist).
+                        appendQueryParameter("type", type).appendQueryParameter("limit",limit).build();
 
             URL url = new URL(uri.toString());
             //setup HTTP connection
@@ -79,7 +93,7 @@ public class GetArtist extends AsyncTask<String,Void,ArrayList<GetArtist.Artist>
 
         }catch(IOException e)
         {
-            Log.e(TAG, "Error", e);
+            Log.e(TAG, "Error"+ e);
             return null;
         }finally {
             if (urlConnection != null)
@@ -89,7 +103,7 @@ public class GetArtist extends AsyncTask<String,Void,ArrayList<GetArtist.Artist>
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    Log.e(TAG, "Error", e);
+                    Log.e(TAG, "Error IO", e);
                 }
 
             }
@@ -99,7 +113,7 @@ public class GetArtist extends AsyncTask<String,Void,ArrayList<GetArtist.Artist>
             return getArtistDetailsFromJson(artistJson);
         }catch(JSONException e)
         {
-            Log.e(TAG,"Error",e);
+            Log.e(TAG,"Error Json",e);
         }
         //empty json
         return null;
@@ -107,10 +121,18 @@ public class GetArtist extends AsyncTask<String,Void,ArrayList<GetArtist.Artist>
 
     @Override
     protected void onPostExecute(ArrayList<Artist> artists) {
+
+        ListAdapter listAdapter = ArtistActivityFragment.getAdapter();
+        listAdapter.clear();
+        artistActivity.clearCache();
+
         if (artists!=null)
         {
-            for(Artist artist : artists)
-            ArtistActivityFragment.getAdapter().add(artist);
+
+            for(Artist artist : artists) {
+                listAdapter.add(artist);
+                          }
+
 
             Log.d(TAG,"Succesfully added");
         }
@@ -140,12 +162,53 @@ public class GetArtist extends AsyncTask<String,Void,ArrayList<GetArtist.Artist>
             if(artistImgArray.length()>0) {
                 artistImg = artistImgArray.getJSONObject(artistImgArray.length() - 1).getString("url");
             }
-            artistObject.add(new Artist(artistName,artistId,artistImg));
+            Bitmap image = getImage(artistImg);
+            artistObject.add(new Artist(artistName,artistId,image));
             Log.i(TAG,artistName+" "+artistId+" "+artistImg);
         }
 
 
         return artistObject;
+    }
+
+    public Bitmap getImage(String imageUrl){
+        HttpURLConnection urlConnection=null;
+        URL imgUrl = null;
+        try {
+            imgUrl = new URL(imageUrl);
+        } catch (MalformedURLException e) {
+            Log.e(TAG,"ERROR",e);
+            return null;
+        }
+
+        try
+        {
+            urlConnection = (HttpURLConnection)imgUrl.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+
+            int responseCode = urlConnection.getResponseCode();
+
+            if(responseCode==200)
+            {
+                return BitmapFactory.decodeStream(urlConnection.getInputStream());
+            }
+            else
+            {
+                return null;
+            }
+        }catch (IOException e)
+        {
+            Log.e(TAG,"ERROR",e);
+            return null;
+        }finally{
+            if(urlConnection!=null)
+            {
+                urlConnection.disconnect();
+            }
+        }
+
+
     }
 
 
@@ -154,13 +217,13 @@ public class GetArtist extends AsyncTask<String,Void,ArrayList<GetArtist.Artist>
         /*Class to store Artist Data*/
         private String name;
         private String id;
-        private String imgUrl;
+        private Bitmap image;
 
-        public Artist(String name,String id,String imgUrl)
+        public Artist(String name,String id,Bitmap image)
         {
             this.name=name;
             this.id=id;
-            this.imgUrl=imgUrl;
+            this.image=image;
         }
 
         String getName() {
@@ -171,8 +234,8 @@ public class GetArtist extends AsyncTask<String,Void,ArrayList<GetArtist.Artist>
             return this.id;
         }
 
-        String getImgUrl(){
-            return this.imgUrl;
+        Bitmap getImage(){
+            return this.image;
         }
     }
 

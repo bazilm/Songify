@@ -51,7 +51,7 @@ public class ArtistActivityFragment extends Fragment {
                     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                             Toast.makeText(getActivity(), v.getText().toString(), Toast.LENGTH_LONG).show();
-                            GetArtist getArtist = new GetArtist();
+                            GetArtist getArtist = new GetArtist((ArtistActivity)getActivity());
                             getArtist.execute(v.getText().toString());
 
                         }

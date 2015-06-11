@@ -1,12 +1,15 @@
 package com.keeneye.musicplayer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -46,19 +49,29 @@ public class ArtistActivityFragment extends Fragment {
 
         listView.setAdapter(listAdapter);
 
-                search.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                    @Override
-                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                            Toast.makeText(getActivity(), v.getText().toString(), Toast.LENGTH_LONG).show();
-                            GetArtist getArtist = new GetArtist((ArtistActivity)getActivity());
-                            getArtist.execute(v.getText().toString());
+        search.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    Toast.makeText(getActivity(), v.getText().toString(), Toast.LENGTH_LONG).show();
+                    GetArtist getArtist = new GetArtist((ArtistActivity) getActivity());
+                    getArtist.execute(v.getText().toString());
 
-                        }
+                }
 
-                        return true;
-                    }
-                });
+                return true;
+            }
+        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(Tag,"Item Clicked" + Integer.toString(position) );
+                GetArtist.Artist artist = listAdapter.getItem(position);
+                Intent intent = new Intent(getActivity(),TrackActivity.class).putExtra(Intent.EXTRA_TEXT,artist.getId());
+                startActivity(intent);
+            }
+        });
 
 
     }

@@ -1,5 +1,7 @@
 package com.keeneye.musicplayer;
 
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.util.LruCache;
@@ -21,6 +23,12 @@ public class ArtistActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        ArtistActivityFragment artistActivityFragment = new ArtistActivityFragment();
+        fragmentTransaction.add(R.id.fragment,artistActivityFragment);
+        fragmentTransaction.commit();
+
         final int max_memory=(int)(Runtime.getRuntime().maxMemory())/1024;
         cacheSize = max_memory/8;
 

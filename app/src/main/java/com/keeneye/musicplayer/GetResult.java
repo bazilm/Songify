@@ -2,11 +2,17 @@
 package com.keeneye.musicplayer;
 
 import android.os.AsyncTask;
+import android.util.Log;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
+import kaaes.spotify.webapi.android.models.Track;
+import kaaes.spotify.webapi.android.models.Tracks;
 
 
 /**
@@ -16,38 +22,71 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
 
   */
 
-public class GetArtist extends AsyncTask<String,Void,ArtistsPager>
+public class GetResult<T> extends AsyncTask<String, Void, T>
 
 {
 
-    private final String TAG = GetArtist.class.getSimpleName();
+    private final String TAG = GetResult.class.getSimpleName();
     /*
     Get the json string from Spotify and parse it.
      */
     ListAdapter listAdapter=null;
+    Class<T> type ;
 
-    public GetArtist(ListAdapter listAdapter)
+    public GetResult(ListAdapter listAdapter,Class<T> type)
     {
         this.listAdapter = listAdapter;
+        this.type = type;
     }
 
     @Override
-    protected ArtistsPager doInBackground(String... params) {
+    protected T doInBackground(String... params) {
 
         SpotifyApi spotifyApi = new SpotifyApi();
         SpotifyService spotifyService = spotifyApi.getService();
 
-        ArtistsPager artists = spotifyService.searchArtists(params[0]);
-        return artists;
+
+        if (type == ArtistsPager.class) {
+
+            T artists = (T) spotifyService.searchArtists(params[0]);
+            Log.d(TAG,"Artists found");
+            return artists;
+        }
+
+        else if(type == Tracks.class)
+        {
+            Map query = new HashMap();
+            query.put("country","SE");
+
+            T tracks = (T) spotifyService.getArtistTopTrack(params[0], query);
+
+
+            Log.d(TAG,"Tracks found");
+            return tracks;
+        }
+
+        else {
+            Log.d(TAG, "Return Type NULL");
+            return null;
+        }
     }
 
     @Override
-    protected void onPostExecute(ArtistsPager artistsPager) {
+    protected void onPostExecute(T results) {
 
+        listAdapter.clear();
 
-        for (Artist artist:artistsPager.artists.items)
+        if(type == ArtistsPager.class) {
+            for (Artist artist : ((ArtistsPager) results).artists.items) {
+                listAdapter.add(artist);
+            }
+        }
+
+        else if (type==Tracks.class)
         {
-            listAdapter.add(artist);
+            for (Track track : ((Tracks)results).tracks){
+                listAdapter.add(track);
+            }
         }
 
     }

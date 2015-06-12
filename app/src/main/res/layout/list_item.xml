@@ -6,7 +6,7 @@
     <ImageView
         android:id="@+id/list_image_item"
         android:contentDescription="@string/img_desc"
-        android:src="@drawable/abba"
+
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:paddingLeft="15dp"

@@ -1,7 +1,6 @@
 package com.keeneye.musicplayer;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,22 +8,26 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
+
+import kaaes.spotify.webapi.android.models.Artist;
 
 /**
  * Created by bazilm on 10-06-2015.
  */
 
-public class ListAdapter extends ArrayAdapter<GetArtist.Artist> {
+public class ListAdapter extends ArrayAdapter<Artist> {
 
 
     private Context context;
-    private ArrayList<GetArtist.Artist> artists= new ArrayList<GetArtist.Artist>();
+    private ArrayList<Artist> artists= new ArrayList<Artist>();
     public ImageView imageView;
 
 
 
-    public ListAdapter(Context context, ArrayList<GetArtist.Artist> values) {
+    public ListAdapter(Context context, ArrayList<Artist> values) {
         super(context, -1,values);
         this.context=context;
         this.artists=values;
@@ -41,14 +44,16 @@ public class ListAdapter extends ArrayAdapter<GetArtist.Artist> {
         TextView textView = (TextView)rowView.findViewById(R.id.list_name_item);
         imageView =(ImageView) rowView.findViewById(R.id.list_image_item);
         SearchActivity searchActivity = ((SearchActivity)context);
-        textView.setText(artists.get(position).getName());
-        Bitmap image = searchActivity.getBitmapFromCache(Integer.toString(position));
-        if (image==null) {
-            searchActivity.addToCache(Integer.toString(position), artists.get(position).getImage());
-            image = artists.get(position).getImage();
+
+        textView.setText(artists.get(position).name);
+
+        int size = artists.get(position).images.size();
+        if(size>0) {
+            String imgUrl = artists.get(position).images.get(size - 1).url;
+            Glide.with(getContext()).load(imgUrl).into(imageView);
         }
 
-        imageView.setImageBitmap(image);
+
 
         return rowView;
     }

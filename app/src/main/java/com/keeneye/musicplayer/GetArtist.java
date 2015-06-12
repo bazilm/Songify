@@ -1,46 +1,72 @@
+
 package com.keeneye.musicplayer;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import kaaes.spotify.webapi.android.SpotifyApi;
+import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.Artist;
+import kaaes.spotify.webapi.android.models.ArtistsPager;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 
 /**
  * Created by bazilm on 10-06-2015.
- */
+  Gets artist details from spotify using spotify api
+  and adds it to the list adapter
 
-public class GetArtist extends AsyncTask<String,Void,ArrayList<GetArtist.Artist>>
+  */
+
+public class GetArtist extends AsyncTask<String,Void,ArtistsPager>
+
 {
 
     private final String TAG = GetArtist.class.getSimpleName();
     /*
     Get the json string from Spotify and parse it.
      */
-    SearchActivity searchActivity =null;
+    ListAdapter listAdapter=null;
 
-    public GetArtist(SearchActivity searchActivity)
+    public GetArtist(ListAdapter listAdapter)
     {
-        this.searchActivity = searchActivity;
+        this.listAdapter = listAdapter;
     }
 
     @Override
-    protected ArrayList<Artist> doInBackground(String... params) {
+    protected ArtistsPager doInBackground(String... params) {
 
+        SpotifyApi spotifyApi = new SpotifyApi();
+        SpotifyService spotifyService = spotifyApi.getService();
+
+        ArtistsPager artists = spotifyService.searchArtists(params[0]);
+        return artists;
+    }
+
+    @Override
+    protected void onPostExecute(ArtistsPager artistsPager) {
+
+
+        for (Artist artist:artistsPager.artists.items)
+        {
+            listAdapter.add(artist);
+        }
+
+    }
+
+
+}
+
+
+
+
+
+
+
+   /*
+
+        The following code is never used. It was the initial implementation.
+        Now changed to use Spotify api and Glide framework.
         //Build url
+
         HttpURLConnection urlConnection=null;
         BufferedReader reader=null;
         String artistJson=null;
@@ -130,7 +156,7 @@ public class GetArtist extends AsyncTask<String,Void,ArrayList<GetArtist.Artist>
         {
 
             for(Artist artist : artists) {
-                listAdapter.add(artist);
+                //listAdapter.add(arist);
                           }
 
 
@@ -212,9 +238,8 @@ public class GetArtist extends AsyncTask<String,Void,ArrayList<GetArtist.Artist>
     }
 
 
-    public class Artist
-    {
-        /*Class to store Artist Data*/
+    public class Artist  {
+        //Class to store Artist Data
         private String name;
         private String id;
         private Bitmap image;
@@ -239,6 +264,4 @@ public class GetArtist extends AsyncTask<String,Void,ArrayList<GetArtist.Artist>
         }
     }
 
-}
-
-
+*/

@@ -17,6 +17,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import kaaes.spotify.webapi.android.models.Artist;
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -45,7 +47,7 @@ public class SearchActivityFragment extends Fragment {
         EditText search = (EditText)getView().findViewById(R.id.search);
 
         ListView listView = (ListView)getView().findViewById(R.id.list_view);
-        listAdapter = new ListAdapter(getActivity(), new ArrayList<GetArtist.Artist>());
+        listAdapter = new ListAdapter(getActivity(), new ArrayList<Artist>());
 
         listView.setAdapter(listAdapter);
 
@@ -54,8 +56,8 @@ public class SearchActivityFragment extends Fragment {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     Toast.makeText(getActivity(), v.getText().toString(), Toast.LENGTH_LONG).show();
-                    GetArtist getArtist = new GetArtist((SearchActivity) getActivity());
-                    getArtist.execute(v.getText().toString());
+
+                    new GetArtist(listAdapter).execute(v.getText().toString());
 
                 }
 
@@ -66,9 +68,9 @@ public class SearchActivityFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(Tag,"Item Clicked" + Integer.toString(position) );
-                GetArtist.Artist artist = listAdapter.getItem(position);
-                Intent intent = new Intent(getActivity(),ResultActivity.class).putExtra(Intent.EXTRA_TEXT,artist.getId());
+                Log.d(Tag, "Item Clicked" + Integer.toString(position));
+                Artist artist = listAdapter.getItem(position);
+                Intent intent = new Intent(getActivity(), ResultActivity.class).putExtra(Intent.EXTRA_TEXT, artist.id);
                 startActivity(intent);
             }
         });

@@ -30,11 +30,11 @@ public class GetArtist extends AsyncTask<String,Void,ArrayList<GetArtist.Artist>
     /*
     Get the json string from Spotify and parse it.
      */
-    ArtistActivity artistActivity=null;
+    SearchActivity searchActivity =null;
 
-    public GetArtist(ArtistActivity artistActivity)
+    public GetArtist(SearchActivity searchActivity)
     {
-        this.artistActivity=artistActivity;
+        this.searchActivity = searchActivity;
     }
 
     @Override
@@ -122,9 +122,9 @@ public class GetArtist extends AsyncTask<String,Void,ArrayList<GetArtist.Artist>
     @Override
     protected void onPostExecute(ArrayList<Artist> artists) {
 
-        ListAdapter listAdapter = ArtistActivityFragment.getAdapter();
+        ListAdapter listAdapter = SearchActivityFragment.getAdapter();
         listAdapter.clear();
-        artistActivity.clearCache();
+        searchActivity.clearCache();
 
         if (artists!=null)
         {

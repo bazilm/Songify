@@ -10,7 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class ArtistActivity extends ActionBarActivity {
+public class SearchActivity extends ActionBarActivity {
 
     private LruCache<String,Bitmap> cache;
     int cacheSize;
@@ -25,8 +25,8 @@ public class ArtistActivity extends ActionBarActivity {
         setContentView(R.layout.activity_artist);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        ArtistActivityFragment artistActivityFragment = new ArtistActivityFragment();
-        fragmentTransaction.add(R.id.fragment,artistActivityFragment);
+        SearchActivityFragment searchActivityFragment = new SearchActivityFragment();
+        fragmentTransaction.add(R.id.fragment, searchActivityFragment);
         fragmentTransaction.commit();
 
         final int max_memory=(int)(Runtime.getRuntime().maxMemory())/1024;

@@ -10,7 +10,7 @@ import android.view.MenuItem;
 /**
  * Created by bazilm on 11-06-2015.
  */
-public class TrackActivity extends ActionBarActivity {
+public class ResultActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

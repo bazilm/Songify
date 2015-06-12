@@ -40,11 +40,11 @@ public class ListAdapter extends ArrayAdapter<GetArtist.Artist> {
         View rowView = inflater.inflate(R.layout.list_item,parent,false);
         TextView textView = (TextView)rowView.findViewById(R.id.list_name_item);
         imageView =(ImageView) rowView.findViewById(R.id.list_image_item);
-        ArtistActivity artistActivity = ((ArtistActivity)context);
+        SearchActivity searchActivity = ((SearchActivity)context);
         textView.setText(artists.get(position).getName());
-        Bitmap image = artistActivity.getBitmapFromCache(Integer.toString(position));
+        Bitmap image = searchActivity.getBitmapFromCache(Integer.toString(position));
         if (image==null) {
-            artistActivity.addToCache(Integer.toString(position), artists.get(position).getImage());
+            searchActivity.addToCache(Integer.toString(position), artists.get(position).getImage());
             image = artists.get(position).getImage();
         }
 

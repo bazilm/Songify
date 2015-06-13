@@ -1,9 +1,12 @@
 
 package com.keeneye.musicplayer;
 
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +16,7 @@ import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
 import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
+import retrofit.RetrofitError;
 
 
 /**
@@ -39,17 +43,27 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
         this.type = type;
     }
 
+    public GetResult(Class<T> type)
+    {
+        this.type=type;
+        this.listAdapter=null;
+    }
+
     @Override
     protected T doInBackground(String... params) {
 
         SpotifyApi spotifyApi = new SpotifyApi();
         SpotifyService spotifyService = spotifyApi.getService();
-
+        T artists = null;
 
         if (type == ArtistsPager.class) {
-
-            T artists = (T) spotifyService.searchArtists(params[0]);
-            Log.d(TAG,"Artists found");
+            try {
+                artists = (T) spotifyService.searchArtists(params[0]);
+                Log.d(TAG, "Artists found");
+            }catch(RetrofitError e)
+            {
+                Log.d(TAG,"Internet Connection Error");
+            }
             return artists;
         }
 
@@ -57,14 +71,33 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
         {
             Map query = new HashMap();
             query.put("country","SE");
+            T tracks = null;
 
-            T tracks = (T) spotifyService.getArtistTopTrack(params[0], query);
-
-
-            Log.d(TAG,"Tracks found");
+            try {
+                tracks = (T) spotifyService.getArtistTopTrack(params[0], query);
+                Log.d(TAG, "Tracks found");
+            }catch(RetrofitError e)
+            {
+                Log.d(TAG,"Internet Connection Error");
+            }
             return tracks;
         }
 
+        else if (type == MediaPlayer.class)
+        {
+            MediaPlayer mediaPlayer = new MediaPlayer();
+            String url = params[0];
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            try {
+                mediaPlayer.setDataSource(url);
+                mediaPlayer.prepare();
+            }catch(IOException e)
+            {
+                Log.d(TAG,"Error preview url");
+            }
+            return (T)mediaPlayer;
+
+        }
         else {
             Log.d(TAG, "Return Type NULL");
             return null;
@@ -74,9 +107,10 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
     @Override
     protected void onPostExecute(T results) {
 
-        listAdapter.clear();
+
 
         if(type == ArtistsPager.class) {
+            listAdapter.clear();
             for (Artist artist : ((ArtistsPager) results).artists.items) {
                 listAdapter.add(artist);
             }
@@ -84,9 +118,15 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
 
         else if (type==Tracks.class)
         {
+            listAdapter.clear();
             for (Track track : ((Tracks)results).tracks){
                 listAdapter.add(track);
             }
+        }
+
+        else if (type==MediaPlayer.class)
+        {
+            ((MediaPlayer)results).start();
         }
 
     }

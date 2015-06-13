@@ -1,8 +1,6 @@
 package com.keeneye.musicplayer;
 
 import android.content.Intent;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -13,7 +11,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import kaaes.spotify.webapi.android.models.Track;
@@ -53,18 +50,17 @@ public class ResultActivityFragment extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Track track = (Track)listAdapter.getItem(position);
-                    MediaPlayer mediaPlayer = new MediaPlayer();
-                    String url = track.preview_url;
-                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    try{
-                        mediaPlayer.setDataSource(url);
-                        mediaPlayer.prepare();
-                    }catch(IOException e)
-                    {
-                        Log.e(TAG,"Error"+e);
-                    }
+                    Bundle bundle = new Bundle();
 
-                    mediaPlayer.start();
+                    bundle.putString("artist_name",track.artists.get(0).name);
+                    bundle.putString("album_name",track.album.name);
+                    if(track.album.images.get(0)!=null)
+                    bundle.putString("img_url",track.album.images.get(0).url);
+                    bundle.putString("preview_url",track.preview_url);
+                    Intent intent = new Intent(getActivity(),MediaActivity.class);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+
                 }
             });
 
@@ -76,3 +72,4 @@ public class ResultActivityFragment extends Fragment {
     public ResultActivityFragment() {
     }
 }
+

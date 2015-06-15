@@ -50,23 +50,6 @@ public class ResultActivityFragment extends Fragment {
             new GetResult<Tracks>(listAdapter,Tracks.class).execute(id);
             listView.setAdapter(listAdapter);
 
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Track track = (Track)listAdapter.getItem(position);
-                    Bundle bundle = new Bundle();
-
-                    bundle.putString("artist_name",track.artists.get(0).name);
-                    bundle.putString("album_name",track.album.name);
-                    if(track.album.images.get(0)!=null)
-                    bundle.putString("img_url",track.album.images.get(0).url);
-                    bundle.putString("preview_url",track.preview_url);
-                    Intent intent = new Intent(getActivity(),MediaActivity.class);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-
-                }
-            });
 
         }
 
@@ -77,6 +60,24 @@ public class ResultActivityFragment extends Fragment {
             listView.setAdapter(listAdapter);
 
         }
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Track track = (Track)listAdapter.getItem(position);
+                Bundle bundle = new Bundle();
+
+                bundle.putString("artist_name",track.artists.get(0).name);
+                bundle.putString("album_name",track.album.name);
+                if(track.album.images.get(0)!=null)
+                    bundle.putString("img_url",track.album.images.get(0).url);
+                bundle.putString("preview_url",track.preview_url);
+                Intent intent = new Intent(getActivity(),MediaActivity.class);
+                intent.putExtras(bundle);
+                startActivity(intent);
+
+            }
+        });
 
 
     }

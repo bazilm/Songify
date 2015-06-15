@@ -1,23 +1,62 @@
 package com.keeneye.musicplayer;
 
 import android.media.MediaPlayer;
-import android.support.v7.app.ActionBarActivity;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 
 public class MediaActivity extends ActionBarActivity {
 
     public String preview_url=null;
-
+    public MediaPlayer mediaPlayer;
+    public  GetResult<MediaPlayer> getMusic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media);
         preview_url=getIntent().getStringExtra("preview_url");
+        mediaPlayer = new MediaPlayer();
+        getMusic = new GetResult<MediaPlayer>(MediaPlayer.class,mediaPlayer);
+        getMusic.execute(preview_url);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(mediaPlayer.isPlaying())
+            mediaPlayer.stop();
+        getMusic.cancel(true);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(mediaPlayer.isPlaying())
+        mediaPlayer.pause();
+
+    }
+
+    @Override
+    protected  void onResume()
+    {
+        super.onResume();
+        mediaPlayer.start();
+
+    }
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        mediaPlayer = new MediaPlayer();
+        getMusic = new GetResult<MediaPlayer>(MediaPlayer.class,mediaPlayer);
+        getMusic.execute(preview_url);
+
     }
 
 
@@ -42,11 +81,32 @@ public class MediaActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    public void play(View v)
+    public void play(View v)  {
+
+        if (getMusic.getStatus() == AsyncTask.Status.FINISHED)
+        {
+            if (!mediaPlayer.isPlaying())
+                mediaPlayer.start();
+        }
+
+        else
+            Toast.makeText(this,"Streaming Audio",Toast.LENGTH_LONG).show();
+
+
+
+    }
+
+    public void pause(View v)
     {
-        new GetResult<MediaPlayer>(MediaPlayer.class).execute(preview_url);
+        if(mediaPlayer.isPlaying())
+            mediaPlayer.pause();
+    }
 
-
-
+    public void stop(View v)
+    {
+        if(mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            mediaPlayer.seekTo(0);
+        }
     }
 }

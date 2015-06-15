@@ -68,6 +68,7 @@ public class ListAdapter<T> extends ArrayAdapter<T> {
             int size = ((Track)(results.get(position))).album.images.size();
             if (size > 0) {
                 String imgUrl = ((Track)(results.get(position))).album.images.get(size - 1).url;
+                if(getContext()!=null)
                 Glide.with(getContext()).load(imgUrl).into(imageView);
             }
 

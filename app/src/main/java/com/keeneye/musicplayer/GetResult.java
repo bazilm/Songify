@@ -36,17 +36,20 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
      */
     ListAdapter listAdapter=null;
     Class<T> type ;
+    MediaPlayer mediaPlayer;
 
     public GetResult(ListAdapter listAdapter,Class<T> type)
     {
         this.listAdapter = listAdapter;
         this.type = type;
+        this.mediaPlayer=null;
     }
 
-    public GetResult(Class<T> type)
+    public GetResult(Class<T> type,MediaPlayer mediaPlayer)
     {
         this.type=type;
         this.listAdapter=null;
+        this.mediaPlayer=mediaPlayer;
     }
 
     @Override
@@ -85,17 +88,18 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
 
         else if (type == MediaPlayer.class)
         {
-            MediaPlayer mediaPlayer = new MediaPlayer();
-            String url = params[0];
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            try {
-                mediaPlayer.setDataSource(url);
-                mediaPlayer.prepare();
-            }catch(IOException e)
-            {
-                Log.d(TAG,"Error preview url");
-            }
-            return (T)mediaPlayer;
+
+                String url = params[0];
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                try {
+                    mediaPlayer.setDataSource(url);
+                    mediaPlayer.prepare();
+                } catch (IOException e) {
+                    Log.d(TAG, "Error preview url");
+                }
+                return (T) mediaPlayer;
+
+
 
         }
         else {
@@ -124,10 +128,7 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
             }
         }
 
-        else if (type==MediaPlayer.class)
-        {
-            ((MediaPlayer)results).start();
-        }
+
 
     }
 

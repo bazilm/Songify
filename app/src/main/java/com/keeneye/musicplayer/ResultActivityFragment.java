@@ -22,6 +22,9 @@ import kaaes.spotify.webapi.android.models.Tracks;
 public class ResultActivityFragment extends Fragment {
 
     private final String TAG = ResultActivityFragment.class.getSimpleName();
+    public static ListAdapter listAdapter;
+    public static ArrayList<Track> tempValues;
+    public ListView listView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -37,14 +40,15 @@ public class ResultActivityFragment extends Fragment {
 
         if(intent!=null && intent.hasExtra(Intent.EXTRA_TEXT))
         {
-            Log.d(TAG,"Result Activity created");
+            Log.d(TAG, "Result Activity created");
             String id = intent.getStringExtra(Intent.EXTRA_TEXT);
             Toast.makeText(getActivity(),id,Toast.LENGTH_LONG).show();
-            final ListAdapter listAdapter = new ListAdapter<Track>(getActivity(),new ArrayList<Track>(),Track.class);
-            ListView listView = (ListView)getView().findViewById(R.id.search_container);
-            listView.setAdapter(listAdapter);
 
+            listView = (ListView)getView().findViewById(R.id.search_container);
+
+            listAdapter=new ListAdapter<Track>(getActivity(),new ArrayList<Track>(),Track.class);
             new GetResult<Tracks>(listAdapter,Tracks.class).execute(id);
+            listView.setAdapter(listAdapter);
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -66,7 +70,22 @@ public class ResultActivityFragment extends Fragment {
 
         }
 
+        else
+        {
+            listView = (ListView)getView().findViewById(R.id.search_container);
+            listAdapter = new ListAdapter<Track>(getActivity(), tempValues, Track.class);
+            listView.setAdapter(listAdapter);
 
+        }
+
+
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        tempValues= listAdapter.getValues();
     }
 
     public ResultActivityFragment() {

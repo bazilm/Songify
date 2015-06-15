@@ -27,8 +27,10 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
 public class SearchActivityFragment extends Fragment {
 
     private String TAG = "Artist Activity";
-    public static ListAdapter listAdapter=null;
-    public ListAdapter tempAdapter=null;
+    public static ListAdapter listAdapter;
+    public static ArrayList<Artist> tempValues;
+    public ListView listView;
+
     public SearchActivityFragment() {
     }
 
@@ -40,6 +42,9 @@ public class SearchActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
+
         return inflater.inflate(R.layout.fragment_artist, container, false);
     }
 
@@ -48,19 +53,7 @@ public class SearchActivityFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         EditText search = (EditText)getView().findViewById(R.id.search);
 
-        ListView listView = (ListView)getView().findViewById(R.id.list_view);
-
-        if (tempAdapter!=null) {
-            listAdapter = new ListAdapter<Artist>(getActivity(), tempAdapter.getValues(), Artist.class);
-            Log.d(TAG, "TempAdapter not Null");
-        }
-        else
-            listAdapter = new ListAdapter<Artist>(getActivity(), new ArrayList<Artist>(),Artist.class);
-
-
-        listView.setAdapter(listAdapter);
-        listAdapter.notifyDataSetChanged();
-        tempAdapter=null;
+        listView = (ListView)getView().findViewById(R.id.list_view);
 
         search.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -80,7 +73,7 @@ public class SearchActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(TAG, "Item Clicked" + Integer.toString(position));
-                Artist artist = (Artist)listAdapter.getItem(position);
+                Artist artist = (Artist) listAdapter.getItem(position);
                 Intent intent = new Intent(getActivity(), ResultActivity.class).putExtra(Intent.EXTRA_TEXT, artist.id);
                 startActivity(intent);
             }
@@ -89,21 +82,37 @@ public class SearchActivityFragment extends Fragment {
 
     }
 
+
+
     @Override
     public void onStart() {
         super.onStart();
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
+        if (tempValues!=null) {
+            listAdapter = new ListAdapter<Artist>(getActivity(), tempValues, Artist.class);
+
+        }
+        else {
+            listAdapter = new ListAdapter<Artist>(getActivity(), new ArrayList<Artist>(), Artist.class);
+
+        }
+
+        listView.setAdapter(listAdapter);
+
+
     }
+
 
     @Override
     public void onPause() {
         super.onPause();
-        ArrayList<Artist> values = (ArrayList<Artist>)listAdapter.getValues();
-        tempAdapter = new ListAdapter(getActivity(),values,Artist.class);
+        tempValues = (ArrayList<Artist>)listAdapter.getValues();
+
     }
 
     @Override

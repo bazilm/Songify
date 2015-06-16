@@ -1,10 +1,8 @@
 package com.keeneye.musicplayer;
 
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentManager;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.util.LruCache;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,12 +10,6 @@ import android.view.MenuItem;
 
 public class SearchActivity extends ActionBarActivity {
 
-    private LruCache<String,Bitmap> cache;
-    int cacheSize;
-
-    public LruCache<String,Bitmap> getCache(){
-        return cache;
-    }
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,39 +21,9 @@ public class SearchActivity extends ActionBarActivity {
         fragmentTransaction.add(R.id.fragment, searchActivityFragment);
         fragmentTransaction.commit();
 
-        final int max_memory=(int)(Runtime.getRuntime().maxMemory())/1024;
-        cacheSize = max_memory/8;
-
-
-        cache = new LruCache<String,Bitmap>(cacheSize){
-
-            @Override
-            protected int sizeOf(String key, Bitmap value) {
-                return (value.getRowBytes() * value.getHeight())/1024;
-            }
-        };
     }
 
 
-    public void addToCache(String key,Bitmap bitmap)
-    {
-        if(getBitmapFromCache(key)==null)
-        {
-            if(bitmap!=null)
-            cache.put(key,bitmap);
-        }
-
-    }
-
-    public Bitmap getBitmapFromCache(String key)
-    {
-        return cache.get(key);
-    }
-
-    public void clearCache()
-    {
-        cache.evictAll();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

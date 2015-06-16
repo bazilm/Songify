@@ -3,7 +3,6 @@ package com.keeneye.musicplayer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +40,6 @@ public class ResultActivityFragment extends Fragment {
 
         if(intent!=null && intent.hasExtra(Intent.EXTRA_TEXT))
         {
-            Log.d(TAG, "Result Activity created");
             String id = intent.getStringExtra(Intent.EXTRA_TEXT);
             Toast.makeText(getActivity(),id,Toast.LENGTH_LONG).show();
 

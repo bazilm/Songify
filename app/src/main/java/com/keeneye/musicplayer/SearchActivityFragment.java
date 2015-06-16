@@ -3,7 +3,6 @@ package com.keeneye.musicplayer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,7 +72,7 @@ public class SearchActivityFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, "Item Clicked" + Integer.toString(position));
+
                 Artist artist = (Artist) listAdapter.getItem(position);
                 Intent intent = new Intent(getActivity(), ResultActivity.class).putExtra(Intent.EXTRA_TEXT, artist.id);
                 startActivity(intent);

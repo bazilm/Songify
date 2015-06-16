@@ -30,6 +30,7 @@ public class SearchActivityFragment extends Fragment {
     public static ListAdapter listAdapter;
     public static ArrayList<Artist> tempValues;
     public ListView listView;
+    public static int scrollPos;
 
     public SearchActivityFragment() {
     }
@@ -102,7 +103,9 @@ public class SearchActivityFragment extends Fragment {
 
         }
 
+
         listView.setAdapter(listAdapter);
+        listView.scrollTo(0,scrollPos);
 
 
     }
@@ -112,6 +115,7 @@ public class SearchActivityFragment extends Fragment {
     public void onPause() {
         super.onPause();
         tempValues = (ArrayList<Artist>)listAdapter.getValues();
+        scrollPos = listView.getScrollY();
 
     }
 

@@ -8,14 +8,12 @@
 
     <TextView
         android:id="@+id/artist_name_text_view"
-        android:text="@string/hello_world"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
     <TextView
         android:id="@+id/album_name_text_view"
-        android:text="sdfe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -23,7 +21,7 @@
     <ImageView
         android:id="@+id/track_artwork_view"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="200dp"
         android:padding="10dp"
         android:layout_below="@id/album_name_text_view"    />
 

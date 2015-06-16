@@ -25,6 +25,7 @@ public class ResultActivityFragment extends Fragment {
     public static ListAdapter listAdapter;
     public static ArrayList<Track> tempValues;
     public ListView listView;
+    public static int scrollPos;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,7 +59,7 @@ public class ResultActivityFragment extends Fragment {
             listView = (ListView)getView().findViewById(R.id.search_container);
             listAdapter = new ListAdapter<Track>(getActivity(), tempValues, Track.class);
             listView.setAdapter(listAdapter);
-
+            listView.scrollTo(0,scrollPos);
         }
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -87,6 +88,7 @@ public class ResultActivityFragment extends Fragment {
     {
         super.onPause();
         tempValues= listAdapter.getValues();
+        scrollPos=listView.getScrollY();
     }
 
     public ResultActivityFragment() {

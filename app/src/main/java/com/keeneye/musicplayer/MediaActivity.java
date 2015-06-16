@@ -43,6 +43,27 @@ public class MediaActivity extends ActionBarActivity {
         getMusic.execute(preview_url);
         seekbar = (SeekBar)this.findViewById(R.id.seekbar);
         handler = new Handler();
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(fromUser)
+                {
+
+                        mediaPlayer.seekTo(seekBar.getProgress()*1000);
+
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     @Override

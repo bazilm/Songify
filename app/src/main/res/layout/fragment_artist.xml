@@ -11,15 +11,29 @@
     android:orientation="vertical"
     tools:context=".ArtistActivityFragment">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
     <EditText
         android:id="@+id/search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/artist_search_hint"
+        android:layout_weight="1"
         android:inputType="text"
         android:imeOptions="actionSearch"
 
         />
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/spinner_array"
+            ></Spinner>
+
+    </LinearLayout>
 
     <ListView
         android:id="@+id/list_view"

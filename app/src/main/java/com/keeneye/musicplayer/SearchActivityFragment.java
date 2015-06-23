@@ -11,6 +11,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,9 +27,13 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
 public class SearchActivityFragment extends Fragment {
 
     private String TAG = "Artist Activity";
+
     public static ListAdapter listAdapter;
     public static ArrayList<Artist> tempValues;
     public ListView listView;
+    public Spinner spinner;
+    public String spinnerItem;
+
     public static int scrollPos;
 
     public SearchActivityFragment() {
@@ -51,9 +56,13 @@ public class SearchActivityFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        EditText search = (EditText)getView().findViewById(R.id.search);
 
         listView = (ListView)getView().findViewById(R.id.list_view);
+        spinner = (Spinner)getView().findViewById(R.id.spinner);
+        spinnerItem = spinner.getSelectedItem().toString();
+
+        final EditText search = (EditText)getView().findViewById(R.id.search);
+        search.setHint("Search "+ spinnerItem);
 
         search.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -61,7 +70,7 @@ public class SearchActivityFragment extends Fragment {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     Toast.makeText(getActivity(), v.getText().toString(), Toast.LENGTH_LONG).show();
 
-                    new GetResult<ArtistsPager>(listAdapter,ArtistsPager.class).execute(v.getText().toString());
+                    new GetResult<ArtistsPager>(listAdapter, ArtistsPager.class).execute(v.getText().toString());
 
                 }
 
@@ -78,6 +87,21 @@ public class SearchActivityFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                spinnerItem = parent.getItemAtPosition(position).toString();
+                search.setHint("Search "+ spinnerItem);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
 
 
     }

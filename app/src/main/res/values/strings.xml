@@ -5,4 +5,12 @@
     <string name="img_desc">Image</string>
     <string name="title_activity_media">MediaActivity</string>
     <string name="hello_world">Hello world!</string>
+
+    <string-array name="spinner_array">
+        <item>Artist</item>
+        <item>Album</item>
+        <item>Track</item>
+
+
+    </string-array>
 </resources>

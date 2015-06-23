@@ -3,6 +3,7 @@ package com.keeneye.musicplayer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 
 import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
+import kaaes.spotify.webapi.android.models.Track;
+import kaaes.spotify.webapi.android.models.TracksPager;
 
 
 /**
@@ -29,10 +32,11 @@ public class SearchActivityFragment extends Fragment {
     private String TAG = "Artist Activity";
 
     public static ListAdapter listAdapter;
-    public static ArrayList<Artist> tempValues;
+    public static ArrayList tempValues;
+
     public ListView listView;
     public Spinner spinner;
-    public String spinnerItem;
+    public static String spinnerItem;
 
     public static int scrollPos;
 
@@ -70,7 +74,30 @@ public class SearchActivityFragment extends Fragment {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     Toast.makeText(getActivity(), v.getText().toString(), Toast.LENGTH_LONG).show();
 
-                    new GetResult<ArtistsPager>(listAdapter, ArtistsPager.class).execute(v.getText().toString());
+                    switch(spinnerItem)
+                    {
+                        case "Artist":
+                        {
+                            listAdapter = new ListAdapter<Artist>(getActivity(),new ArrayList<Artist>(),Artist.class);
+                            listView.setAdapter(listAdapter);
+                            new GetResult<ArtistsPager>(listAdapter, ArtistsPager.class).execute(v.getText().toString());
+                            break;
+
+                        }
+
+                        case "Track":
+                        {
+                            listAdapter = new ListAdapter<Track>(getActivity(),new ArrayList<Track>(),Track.class);
+                            listView.setAdapter(listAdapter);
+                            new GetResult<TracksPager>(listAdapter,TracksPager.class).execute(v.getText().toString());
+                            break;
+                        }
+
+                        case "Album":
+                            break;
+                    }
+
+
 
                 }
 
@@ -82,9 +109,32 @@ public class SearchActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Artist artist = (Artist) listAdapter.getItem(position);
-                Intent intent = new Intent(getActivity(), ResultActivity.class).putExtra(Intent.EXTRA_TEXT, artist.id);
-                startActivity(intent);
+                if(listAdapter.getType()==Artist.class) {
+
+                    Artist artist = (Artist) listAdapter.getItem(position);
+                    Intent intent = new Intent(getActivity(), ResultActivity.class).putExtra(Intent.EXTRA_TEXT, artist.id);
+                    startActivity(intent);
+                }
+
+                else if(listAdapter.getType()==Track.class){
+                    Track track = (Track)listAdapter.getItem(position);
+                    Bundle bundle = new Bundle();
+
+                    bundle.putString("artist_name",track.artists.get(0).name);
+                    bundle.putString("album_name",track.album.name);
+                    if(track.album.images.get(0)!=null)
+                        bundle.putString("img_url",track.album.images.get(0).url);
+                    bundle.putString("preview_url",track.preview_url);
+                    Intent intent = new Intent(getActivity(),MediaActivity.class);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+
+                }
+
+                else
+                {
+                    Log.d(TAG,"Album Not Available");
+                }
             }
         });
 
@@ -92,7 +142,7 @@ public class SearchActivityFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 spinnerItem = parent.getItemAtPosition(position).toString();
-                search.setHint("Search "+ spinnerItem);
+                search.setHint("Search " + spinnerItem);
             }
 
             @Override
@@ -117,18 +167,21 @@ public class SearchActivityFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (tempValues!=null) {
-            listAdapter = new ListAdapter<Artist>(getActivity(), tempValues, Artist.class);
+
+        if(tempValues!=null)
+        {
+            if(tempValues.get(0).getClass()==Artist.class)
+                listAdapter = new ListAdapter<Artist>(getActivity(),tempValues,Artist.class);
+
+            else if(tempValues.get(0).getClass()==Track.class)
+                listAdapter = new ListAdapter<Track>(getActivity(),tempValues,Track.class);
+
+            listView.setAdapter(listAdapter);
 
         }
-        else {
-            listAdapter = new ListAdapter<Artist>(getActivity(), new ArrayList<Artist>(), Artist.class);
-
-        }
 
 
-        listView.setAdapter(listAdapter);
-        listView.scrollTo(0,scrollPos);
+
 
 
     }
@@ -137,8 +190,7 @@ public class SearchActivityFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        tempValues = (ArrayList<Artist>)listAdapter.getValues();
-        scrollPos = listView.getScrollY();
+        tempValues = listAdapter.getValues();
 
     }
 

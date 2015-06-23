@@ -16,6 +16,7 @@ import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
 import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
+import kaaes.spotify.webapi.android.models.TracksPager;
 import retrofit.RetrofitError;
 
 
@@ -57,9 +58,10 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
 
         SpotifyApi spotifyApi = new SpotifyApi();
         SpotifyService spotifyService = spotifyApi.getService();
-        T artists = null;
+
 
         if (type == ArtistsPager.class) {
+            T artists = null;
             try {
                 artists = (T) spotifyService.searchArtists(params[0]);
                 Log.d(TAG, "Artists found");
@@ -84,6 +86,22 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
                 Log.d(TAG,"Internet Connection Error");
             }
             return tracks;
+        }
+
+        else if(type==TracksPager.class)
+        {
+            T tracks = null;
+            try{
+                tracks = (T)spotifyService.searchTracks(params[0]);
+                Log.d(TAG,"Tracks Found");
+            }catch (RetrofitError e)
+            {
+                Log.d(TAG,"Internet Connection Error");
+            }
+
+            return tracks;
+
+
         }
 
         else if (type == MediaPlayer.class)
@@ -124,6 +142,14 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
         {
             listAdapter.clear();
             for (Track track : ((Tracks)results).tracks){
+                listAdapter.add(track);
+            }
+        }
+
+        else if(type==TracksPager.class)
+        {
+            listAdapter.clear();
+            for(Track track : ((TracksPager)results).tracks.items){
                 listAdapter.add(track);
             }
         }

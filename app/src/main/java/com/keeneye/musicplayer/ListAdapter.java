@@ -84,4 +84,8 @@ public class ListAdapter<T> extends ArrayAdapter<T> {
 
 
     }
+
+    public Class<T> getType() {
+        return type;
+    }
 }

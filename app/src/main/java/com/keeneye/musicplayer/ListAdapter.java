@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
+import kaaes.spotify.webapi.android.models.AlbumSimple;
 import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.Track;
 
@@ -68,7 +69,20 @@ public class ListAdapter<T> extends ArrayAdapter<T> {
             int size = ((Track)(results.get(position))).album.images.size();
             if (size > 0) {
                 String imgUrl = ((Track)(results.get(position))).album.images.get(size - 1).url;
-                if(getContext()!=null)
+
+                Glide.with(getContext()).load(imgUrl).into(imageView);
+            }
+
+        }
+
+        else if(type == AlbumSimple.class)
+        {
+            textView.setText(((AlbumSimple)(results.get(position))).name);
+            int size = ((AlbumSimple)(results.get(position))).images.size();
+
+            if(size>0)
+            {
+                String imgUrl = ((AlbumSimple)(results.get(position))).images.get(size-1).url;
                 Glide.with(getContext()).load(imgUrl).into(imageView);
             }
 

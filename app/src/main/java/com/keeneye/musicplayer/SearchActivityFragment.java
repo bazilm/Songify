@@ -3,7 +3,6 @@ package com.keeneye.musicplayer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +17,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import kaaes.spotify.webapi.android.models.AlbumSimple;
+import kaaes.spotify.webapi.android.models.AlbumsPager;
 import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
 import kaaes.spotify.webapi.android.models.Track;
@@ -94,6 +95,10 @@ public class SearchActivityFragment extends Fragment {
                         }
 
                         case "Album":
+                            listAdapter = new ListAdapter<AlbumSimple>(getActivity(),new ArrayList<AlbumSimple>(),AlbumSimple.class);
+                            listView.setAdapter(listAdapter);
+                            new GetResult<AlbumsPager>(listAdapter,AlbumsPager.class).execute(v.getText().toString());
+
                             break;
                     }
 
@@ -112,7 +117,8 @@ public class SearchActivityFragment extends Fragment {
                 if(listAdapter.getType()==Artist.class) {
 
                     Artist artist = (Artist) listAdapter.getItem(position);
-                    Intent intent = new Intent(getActivity(), ResultActivity.class).putExtra(Intent.EXTRA_TEXT, artist.id);
+                    Intent intent = new Intent(getActivity(), ResultActivity.class).putExtra(Intent.EXTRA_TEXT, artist.id)
+                    .putExtra("Type","Artist");
                     startActivity(intent);
                 }
 
@@ -131,9 +137,14 @@ public class SearchActivityFragment extends Fragment {
 
                 }
 
-                else
+                else if(listAdapter.getType()==AlbumSimple.class)
                 {
-                    Log.d(TAG,"Album Not Available");
+
+                    AlbumSimple album = (AlbumSimple) listAdapter.getItem(position);
+                    Intent intent = new Intent(getActivity(), ResultActivity.class).putExtra(Intent.EXTRA_TEXT, album.id)
+                            .putExtra("Type","Album");
+                    startActivity(intent);
+
                 }
             }
         });
@@ -175,6 +186,9 @@ public class SearchActivityFragment extends Fragment {
 
             else if(tempValues.get(0).getClass()==Track.class)
                 listAdapter = new ListAdapter<Track>(getActivity(),tempValues,Track.class);
+
+            else if(tempValues.get(0).getClass()== AlbumSimple.class)
+                listAdapter=new ListAdapter<AlbumSimple>(getActivity(),tempValues,AlbumSimple.class);
 
             listView.setAdapter(listAdapter);
 

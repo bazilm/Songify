@@ -12,9 +12,13 @@ import java.util.Map;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.Album;
+import kaaes.spotify.webapi.android.models.AlbumSimple;
+import kaaes.spotify.webapi.android.models.AlbumsPager;
 import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
 import kaaes.spotify.webapi.android.models.Track;
+import kaaes.spotify.webapi.android.models.TrackSimple;
 import kaaes.spotify.webapi.android.models.Tracks;
 import kaaes.spotify.webapi.android.models.TracksPager;
 import retrofit.RetrofitError;
@@ -104,6 +108,20 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
 
         }
 
+        else if (type == AlbumsPager.class)
+        {
+            T albums = null;
+
+            try{
+                albums = (T)spotifyService.searchAlbums(params[0]);
+                Log.d(TAG,"Albums Found");
+            }catch (RetrofitError e)
+            {
+                Log.d(TAG,"Internet Connection Error");
+            }
+            return albums;
+        }
+
         else if (type == MediaPlayer.class)
         {
 
@@ -118,6 +136,21 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
                 return (T) mediaPlayer;
 
 
+
+        }
+
+        else if (type == AlbumSimple.class)
+        {
+            Album album=null;
+            try {
+                 album = spotifyService.getAlbum(params[0]);
+            }
+            catch(RetrofitError  e)
+            {
+                Log.d(TAG,"Internet Connection error");
+            }
+
+            return (T)album;
 
         }
         else {
@@ -152,6 +185,36 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
             for(Track track : ((TracksPager)results).tracks.items){
                 listAdapter.add(track);
             }
+        }
+
+        else if (type==AlbumsPager.class)
+        {
+            listAdapter.clear();
+            for(AlbumSimple album : ((AlbumsPager)results).albums.items)
+                listAdapter.add(album);
+        }
+
+        else if (type == AlbumSimple.class)
+        {
+
+            listAdapter.clear();
+            String artistName,albumName,imgUrl;
+            for (TrackSimple track : (((Album)results).tracks.items))
+            {
+
+               Track newTrack = new Track();
+
+                newTrack.preview_url=track.preview_url;
+                newTrack.name = track.name;
+                newTrack.album=((Album)results);
+                newTrack.artists= ((Album)results).artists;
+                newTrack.album.images = ((Album)results).images;
+
+                listAdapter.add(newTrack);
+
+
+            }
+
         }
 
 

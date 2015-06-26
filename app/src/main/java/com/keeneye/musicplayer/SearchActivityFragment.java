@@ -82,8 +82,13 @@ public class SearchActivityFragment extends Fragment {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
 
                     if (!isNetworkAvailable()) {
+                        if(listAdapter!=null)
+                            listAdapter.clear();
+
                         statusTextView.setText("Please Check your Internet Connection");
-                    } else {
+                    }
+                    else
+                    {
                         Toast.makeText(getActivity(), "Searching...", Toast.LENGTH_LONG).show();
 
                         switch (spinnerItem) {

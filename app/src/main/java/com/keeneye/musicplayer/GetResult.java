@@ -173,8 +173,10 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
     protected void onPostExecute(T results) {
 
 
-           if(textView!=null)
+           if(textView!=null) {
+
                textView.setText("");
+           }
 
            if (type == ArtistsPager.class) {
                 listAdapter.clear();

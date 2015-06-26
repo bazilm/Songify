@@ -25,7 +25,7 @@ public class ListAdapter<T> extends ArrayAdapter<T> {
 
     private Context context;
     private ArrayList<T> results = new ArrayList<T>();
-    public ImageView imageView;
+    private ImageView imageView;
     private Class<T> type;
 
 
@@ -102,4 +102,6 @@ public class ListAdapter<T> extends ArrayAdapter<T> {
     public Class<T> getType() {
         return type;
     }
+
+
 }

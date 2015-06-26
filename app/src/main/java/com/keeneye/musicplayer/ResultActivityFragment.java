@@ -1,6 +1,9 @@
 package com.keeneye.musicplayer;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -8,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -23,6 +27,7 @@ public class ResultActivityFragment extends Fragment {
 
     private final String TAG = ResultActivityFragment.class.getSimpleName();
     public static ListAdapter listAdapter;
+    public TextView statusTextView;
     public static ArrayList<Track> tempValues;
     public ListView listView;
     public static int scrollPos;
@@ -39,34 +44,44 @@ public class ResultActivityFragment extends Fragment {
 
         Intent intent = getActivity().getIntent();
 
+        statusTextView = (TextView)getView().findViewById(R.id.status_textView);
+
         if(intent!=null && intent.hasExtra(Intent.EXTRA_TEXT))
         {
-            String type = intent.getStringExtra("Type");
 
-            switch(type) {
-                case "Artist": {
-                    String id = intent.getStringExtra(Intent.EXTRA_TEXT);
-                    Toast.makeText(getActivity(), id, Toast.LENGTH_LONG).show();
+            if(!isNetworkAvailable())
+            {
+                statusTextView.setText("Please check your Internet Connection");
+            }
 
-                    listView = (ListView) getView().findViewById(R.id.search_container);
+            else {
+                String type = intent.getStringExtra("Type");
 
-                    listAdapter = new ListAdapter<Track>(getActivity(), new ArrayList<Track>(), Track.class);
-                    new GetResult<Tracks>(listAdapter, Tracks.class).execute(id);
-                    listView.setAdapter(listAdapter);
-                    break;
-                }
+                switch (type) {
+                    case "Artist": {
+                        String id = intent.getStringExtra(Intent.EXTRA_TEXT);
+                        Toast.makeText(getActivity(), id, Toast.LENGTH_LONG).show();
 
-                case "Album": {
-                    String id = intent.getStringExtra(Intent.EXTRA_TEXT);
-                    Toast.makeText(getActivity(), id, Toast.LENGTH_LONG).show();
+                        listView = (ListView) getView().findViewById(R.id.search_container);
 
-                    listView = (ListView) getView().findViewById(R.id.search_container);
-                    listAdapter = new ListAdapter<Track>(getActivity(), new ArrayList<Track>(), Track.class);
-                    new GetResult<AlbumSimple>(listAdapter, AlbumSimple.class).execute(id);
-                    listView.setAdapter(listAdapter);
-                    break;
+                        listAdapter = new ListAdapter<Track>(getActivity(), new ArrayList<Track>(), Track.class);
+                        new GetResult<Tracks>(listAdapter, Tracks.class).execute(id);
+                        listView.setAdapter(listAdapter);
+                        break;
+                    }
+
+                    case "Album": {
+                        String id = intent.getStringExtra(Intent.EXTRA_TEXT);
+                        Toast.makeText(getActivity(), id, Toast.LENGTH_LONG).show();
+
+                        listView = (ListView) getView().findViewById(R.id.search_container);
+                        listAdapter = new ListAdapter<Track>(getActivity(), new ArrayList<Track>(), Track.class);
+                        new GetResult<AlbumSimple>(listAdapter, AlbumSimple.class).execute(id);
+                        listView.setAdapter(listAdapter);
+                        break;
 
 
+                    }
                 }
             }
 
@@ -111,11 +126,16 @@ public class ResultActivityFragment extends Fragment {
     public void onPause()
     {
         super.onPause();
+        if(listAdapter!=null)
         tempValues= listAdapter.getValues();
-        scrollPos=listView.getScrollY();
+
     }
 
-    public ResultActivityFragment() {
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }
 

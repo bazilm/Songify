@@ -1,6 +1,9 @@
 package com.keeneye.musicplayer;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -20,6 +23,8 @@ public class MediaActivityFragment extends Fragment {
 
     private final String TAG = MediaActivityFragment.class.getSimpleName();
 
+    private TextView statusTextView;
+
     public MediaActivityFragment() {
     }
 
@@ -33,8 +38,8 @@ public class MediaActivityFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Intent intent = getActivity().getIntent();
-
-        if(intent!=null)
+        statusTextView=(TextView)getView().findViewById(R.id.status_textView);
+        if(intent!=null&&isNetworkAvailable())
         {
             Log.d(TAG,"Media Activity Created");
             Bundle bundle=intent.getExtras();
@@ -53,6 +58,18 @@ public class MediaActivityFragment extends Fragment {
 
 
         }
+        else
+        {
+
+           statusTextView.setText("Please check your Internet Connection");
+        }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 

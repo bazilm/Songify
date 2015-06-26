@@ -23,6 +23,12 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         />
+
+    <TextView
+        android:id="@+id/status_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"/>
     <ImageView
         android:id="@+id/track_artwork_view"
         android:layout_width="match_parent"

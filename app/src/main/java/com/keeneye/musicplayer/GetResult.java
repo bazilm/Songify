@@ -5,6 +5,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,18 +37,26 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
 {
 
     private final String TAG = GetResult.class.getSimpleName();
-    /*
-    Get the json string from Spotify and parse it.
-     */
+
     ListAdapter listAdapter=null;
+    TextView textView;
     Class<T> type ;
     MediaPlayer mediaPlayer;
+
 
     public GetResult(ListAdapter listAdapter,Class<T> type)
     {
         this.listAdapter = listAdapter;
         this.type = type;
         this.mediaPlayer=null;
+        this.textView=null;
+    }
+    public GetResult(ListAdapter listAdapter,TextView textView,Class<T> type)
+    {
+        this.listAdapter = listAdapter;
+        this.type = type;
+        this.mediaPlayer=null;
+        this.textView=textView;
     }
 
     public GetResult(Class<T> type,MediaPlayer mediaPlayer)
@@ -55,6 +64,7 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
         this.type=type;
         this.listAdapter=null;
         this.mediaPlayer=mediaPlayer;
+        this.textView=null;
     }
 
     @Override
@@ -163,63 +173,63 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
     protected void onPostExecute(T results) {
 
 
+           if(textView!=null)
+               textView.setText("");
 
-        if(type == ArtistsPager.class) {
-            listAdapter.clear();
-            for (Artist artist : ((ArtistsPager) results).artists.items) {
-                listAdapter.add(artist);
+           if (type == ArtistsPager.class) {
+                listAdapter.clear();
+
+
+                for (Artist artist : ((ArtistsPager) results).artists.items) {
+                    listAdapter.add(artist);
+                }
+            }
+            else if (type == Tracks.class) {
+                listAdapter.clear();
+
+                for (Track track : ((Tracks) results).tracks) {
+                    listAdapter.add(track);
+                }
+            }
+            else if (type == TracksPager.class) {
+                listAdapter.clear();
+
+                for (Track track : ((TracksPager) results).tracks.items) {
+                    listAdapter.add(track);
+                }
+            }
+            else if (type == AlbumsPager.class) {
+                listAdapter.clear();
+
+                for (AlbumSimple album : ((AlbumsPager) results).albums.items)
+                    listAdapter.add(album);
+            }
+            else if (type == AlbumSimple.class) {
+
+                listAdapter.clear();
+
+                String artistName, albumName, imgUrl;
+                for (TrackSimple track : (((Album) results).tracks.items)) {
+
+                    Track newTrack = new Track();
+
+                    newTrack.preview_url = track.preview_url;
+                    newTrack.name = track.name;
+                    newTrack.album = ((Album) results);
+                    newTrack.artists = ((Album) results).artists;
+                    newTrack.album.images = ((Album) results).images;
+
+                    listAdapter.add(newTrack);
+
+
+                }
+
             }
         }
 
-        else if (type==Tracks.class)
-        {
-            listAdapter.clear();
-            for (Track track : ((Tracks)results).tracks){
-                listAdapter.add(track);
-            }
-        }
-
-        else if(type==TracksPager.class)
-        {
-            listAdapter.clear();
-            for(Track track : ((TracksPager)results).tracks.items){
-                listAdapter.add(track);
-            }
-        }
-
-        else if (type==AlbumsPager.class)
-        {
-            listAdapter.clear();
-            for(AlbumSimple album : ((AlbumsPager)results).albums.items)
-                listAdapter.add(album);
-        }
-
-        else if (type == AlbumSimple.class)
-        {
-
-            listAdapter.clear();
-            String artistName,albumName,imgUrl;
-            for (TrackSimple track : (((Album)results).tracks.items))
-            {
-
-               Track newTrack = new Track();
-
-                newTrack.preview_url=track.preview_url;
-                newTrack.name = track.name;
-                newTrack.album=((Album)results);
-                newTrack.artists= ((Album)results).artists;
-                newTrack.album.images = ((Album)results).images;
-
-                listAdapter.add(newTrack);
-
-
-            }
-
-        }
 
 
 
-    }
 
 
 }

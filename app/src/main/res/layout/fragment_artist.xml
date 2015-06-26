@@ -35,6 +35,12 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/status_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"/>
+
     <ListView
         android:id="@+id/list_view"
         android:layout_width="match_parent"

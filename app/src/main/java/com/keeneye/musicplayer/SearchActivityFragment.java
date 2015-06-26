@@ -1,6 +1,9 @@
 package com.keeneye.musicplayer;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
@@ -37,6 +40,8 @@ public class SearchActivityFragment extends Fragment {
 
     public ListView listView;
     public Spinner spinner;
+    public TextView statusTextView;
+
     public static String spinnerItem;
 
     public static int scrollPos;
@@ -64,6 +69,8 @@ public class SearchActivityFragment extends Fragment {
 
         listView = (ListView)getView().findViewById(R.id.list_view);
         spinner = (Spinner)getView().findViewById(R.id.spinner);
+        statusTextView = (TextView)getView().findViewById(R.id.status_textView);
+
         spinnerItem = spinner.getSelectedItem().toString();
 
         final EditText search = (EditText)getView().findViewById(R.id.search);
@@ -73,37 +80,38 @@ public class SearchActivityFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    Toast.makeText(getActivity(), v.getText().toString(), Toast.LENGTH_LONG).show();
 
-                    switch(spinnerItem)
-                    {
-                        case "Artist":
-                        {
-                            listAdapter = new ListAdapter<Artist>(getActivity(),new ArrayList<Artist>(),Artist.class);
-                            listView.setAdapter(listAdapter);
-                            new GetResult<ArtistsPager>(listAdapter, ArtistsPager.class).execute(v.getText().toString());
-                            break;
+                    if (!isNetworkAvailable()) {
+                        statusTextView.setText("Please Check your Internet Connection");
+                    } else {
+                        Toast.makeText(getActivity(), "Searching...", Toast.LENGTH_LONG).show();
 
+                        switch (spinnerItem) {
+                            case "Artist": {
+                                listAdapter = new ListAdapter<Artist>(getActivity(), new ArrayList<Artist>(), Artist.class);
+                                listView.setAdapter(listAdapter);
+                                new GetResult<ArtistsPager>(listAdapter, statusTextView, ArtistsPager.class).execute(v.getText().toString());
+                                break;
+
+                            }
+
+                            case "Track": {
+                                listAdapter = new ListAdapter<Track>(getActivity(), new ArrayList<Track>(), Track.class);
+                                listView.setAdapter(listAdapter);
+                                new GetResult<TracksPager>(listAdapter, statusTextView, TracksPager.class).execute(v.getText().toString());
+                                break;
+                            }
+
+                            case "Album":
+                                listAdapter = new ListAdapter<AlbumSimple>(getActivity(), new ArrayList<AlbumSimple>(), AlbumSimple.class);
+                                listView.setAdapter(listAdapter);
+                                new GetResult<AlbumsPager>(listAdapter, statusTextView, AlbumsPager.class).execute(v.getText().toString());
+
+                                break;
                         }
 
-                        case "Track":
-                        {
-                            listAdapter = new ListAdapter<Track>(getActivity(),new ArrayList<Track>(),Track.class);
-                            listView.setAdapter(listAdapter);
-                            new GetResult<TracksPager>(listAdapter,TracksPager.class).execute(v.getText().toString());
-                            break;
-                        }
 
-                        case "Album":
-                            listAdapter = new ListAdapter<AlbumSimple>(getActivity(),new ArrayList<AlbumSimple>(),AlbumSimple.class);
-                            listView.setAdapter(listAdapter);
-                            new GetResult<AlbumsPager>(listAdapter,AlbumsPager.class).execute(v.getText().toString());
-
-                            break;
                     }
-
-
-
                 }
 
                 return true;
@@ -204,6 +212,7 @@ public class SearchActivityFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        if(listAdapter!=null)
         tempValues = listAdapter.getValues();
 
     }
@@ -216,6 +225,13 @@ public class SearchActivityFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 

@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
@@ -181,50 +182,79 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
            if (type == ArtistsPager.class) {
                 listAdapter.clear();
 
+               List<Artist> artists = ((ArtistsPager) results).artists.items;
 
-                for (Artist artist : ((ArtistsPager) results).artists.items) {
-                    listAdapter.add(artist);
-                }
+               if(artists.size()!=0) {
+                   for (Artist artist : artists) {
+                       listAdapter.add(artist);
+                   }
+               }
+               else
+                   textView.setText("No Artists Found");
             }
             else if (type == Tracks.class) {
                 listAdapter.clear();
 
-                for (Track track : ((Tracks) results).tracks) {
-                    listAdapter.add(track);
-                }
+               List<Track> tracks = ((Tracks) results).tracks;
+
+               if(tracks.size()!=0) {
+                   for (Track track : tracks) {
+                       listAdapter.add(track);
+                   }
+               }
+               else
+                   textView.setText("No Tracks Found");
             }
             else if (type == TracksPager.class) {
                 listAdapter.clear();
 
-                for (Track track : ((TracksPager) results).tracks.items) {
-                    listAdapter.add(track);
-                }
+               List<Track> tracks = ((TracksPager) results).tracks.items;
+
+               if(tracks.size()!=0) {
+                   for (Track track : tracks) {
+                       listAdapter.add(track);
+                   }
+               }
+               else
+                   textView.setText("No Tracks Found");
             }
             else if (type == AlbumsPager.class) {
                 listAdapter.clear();
 
-                for (AlbumSimple album : ((AlbumsPager) results).albums.items)
-                    listAdapter.add(album);
+               List<AlbumSimple> albums = ((AlbumsPager) results).albums.items;
+
+               if(albums.size()!=0) {
+                   for (AlbumSimple album : albums)
+                       listAdapter.add(album);
+               }
+               else
+                   textView.setText("No Albums Found");
             }
             else if (type == AlbumSimple.class) {
 
                 listAdapter.clear();
 
-                String artistName, albumName, imgUrl;
-                for (TrackSimple track : (((Album) results).tracks.items)) {
+                List<TrackSimple> tracks = (((Album) results).tracks.items);
 
-                    Track newTrack = new Track();
+               if(tracks.size()!=0) {
+                   String artistName, albumName, imgUrl;
+                   for (TrackSimple track : (((Album) results).tracks.items)) {
 
-                    newTrack.preview_url = track.preview_url;
-                    newTrack.name = track.name;
-                    newTrack.album = ((Album) results);
-                    newTrack.artists = ((Album) results).artists;
-                    newTrack.album.images = ((Album) results).images;
+                       Track newTrack = new Track();
 
-                    listAdapter.add(newTrack);
+                       newTrack.preview_url = track.preview_url;
+                       newTrack.name = track.name;
+                       newTrack.album = ((Album) results);
+                       newTrack.artists = ((Album) results).artists;
+                       newTrack.album.images = ((Album) results).images;
+
+                       listAdapter.add(newTrack);
 
 
-                }
+                   }
+               }
+               else
+                   textView.setText("No Tracks Found");
 
             }
         }

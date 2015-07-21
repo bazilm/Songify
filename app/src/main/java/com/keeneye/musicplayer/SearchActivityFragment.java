@@ -29,11 +29,11 @@ import kaaes.spotify.webapi.android.models.TracksPager;
 
 
 /**
- * A placeholder fragment containing a simple view.
+ * Fragment of Search Activity(Main Activity).
  */
 public class SearchActivityFragment extends Fragment {
 
-    private String TAG = "Artist Activity";
+    private String TAG = SearchActivity.class.getSimpleName();
 
     public static ListAdapter listAdapter;
     public static ArrayList tempValues;
@@ -60,7 +60,7 @@ public class SearchActivityFragment extends Fragment {
 
 
 
-        return inflater.inflate(R.layout.fragment_artist, container, false);
+        return inflater.inflate(R.layout.fragment_search, container, false);
     }
 
     @Override
@@ -76,11 +76,14 @@ public class SearchActivityFragment extends Fragment {
         final EditText search = (EditText)getView().findViewById(R.id.search);
         search.setHint("Search "+ spinnerItem);
 
+        //Listener for EditText
         search.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
 
+
+                    //Checking internet status.
                     if (!isNetworkAvailable()) {
                         if(listAdapter!=null)
                             listAdapter.clear();
@@ -126,7 +129,7 @@ public class SearchActivityFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                //Filling up listView based on its type.
                 if(listAdapter.getType()==Artist.class) {
 
                     Artist artist = (Artist) listAdapter.getItem(position);

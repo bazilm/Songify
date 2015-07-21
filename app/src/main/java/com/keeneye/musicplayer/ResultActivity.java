@@ -9,12 +9,14 @@ import android.view.MenuItem;
 
 /**
  * Created by bazilm on 11-06-2015.
+
+ Activity to show the search Results.
  */
 public class ResultActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_artist);
+        setContentView(R.layout.fragment_holder);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

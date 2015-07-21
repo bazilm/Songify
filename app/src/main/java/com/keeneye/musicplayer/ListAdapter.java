@@ -18,6 +18,9 @@ import kaaes.spotify.webapi.android.models.Track;
 
 /**
  * Created by bazilm on 10-06-2015.
+
+ Custom List Adapter to populate the listView based on the type of data.
+
  */
 
 public class ListAdapter<T> extends ArrayAdapter<T> {

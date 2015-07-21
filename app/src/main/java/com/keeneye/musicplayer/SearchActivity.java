@@ -7,14 +7,16 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-
+/*
+Main Activity to search for artists,albums or tracks.
+*/
 public class SearchActivity extends ActionBarActivity {
 
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_artist);
+        setContentView(R.layout.fragment_holder);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         SearchActivityFragment searchActivityFragment = new SearchActivityFragment();

@@ -27,9 +27,9 @@ import retrofit.RetrofitError;
 
 
 /**
- * Created by bazilm on 10-06-2015.
-  Gets artist details from spotify using spotify api
-  and adds it to the list adapter
+    Created by bazilm on 10-06-2015.
+
+    Does all the background tasks.
 
   */
 
@@ -74,6 +74,9 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
         SpotifyApi spotifyApi = new SpotifyApi();
         SpotifyService spotifyService = spotifyApi.getService();
 
+
+        //Gets the results based on type variable.
+        //Spotify Api calls go here.
 
         if (type == ArtistsPager.class) {
             T artists = null;
@@ -133,6 +136,23 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
             return albums;
         }
 
+        else if (type == AlbumSimple.class)
+        {
+            Album album=null;
+            try {
+                album = spotifyService.getAlbum(params[0]);
+            }
+            catch(RetrofitError  e)
+            {
+                Log.d(TAG,"Internet Connection error");
+            }
+
+            return (T)album;
+
+        }
+
+        //Setting up mediaPlayer.
+
         else if (type == MediaPlayer.class)
         {
 
@@ -150,20 +170,7 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
 
         }
 
-        else if (type == AlbumSimple.class)
-        {
-            Album album=null;
-            try {
-                 album = spotifyService.getAlbum(params[0]);
-            }
-            catch(RetrofitError  e)
-            {
-                Log.d(TAG,"Internet Connection error");
-            }
 
-            return (T)album;
-
-        }
         else {
             Log.d(TAG, "Return Type NULL");
             return null;
@@ -173,11 +180,14 @@ public class GetResult<T> extends AsyncTask<String, Void, T>
     @Override
     protected void onPostExecute(T results) {
 
-
+            //Clearing the status textView.
            if(textView!=null) {
 
                textView.setText("");
            }
+
+
+        // Checking the results and adding them to ListAdapter
 
            if (type == ArtistsPager.class) {
                 listAdapter.clear();

@@ -12,6 +12,9 @@ import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+/*
+Activity to play Music.
+ */
 
 public class MediaActivity extends ActionBarActivity {
 
@@ -22,6 +25,9 @@ public class MediaActivity extends ActionBarActivity {
     public  GetResult<MediaPlayer> getMusic;
     public SeekBar seekbar = null;
     public android.os.Handler handler = null;
+
+
+    //Seekbar updation per second.
     public Runnable seekbarUpdation = new Runnable() {
         @Override
         public void run() {
@@ -43,6 +49,8 @@ public class MediaActivity extends ActionBarActivity {
         getMusic.execute(preview_url);
         seekbar = (SeekBar)this.findViewById(R.id.seekbar);
         handler = new Handler();
+
+
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -131,6 +139,9 @@ public class MediaActivity extends ActionBarActivity {
             if (!mediaPlayer.isPlaying()) {
                 seekbar.setMax(mediaPlayer.getDuration() / 1000);
                 mediaPlayer.start();
+
+                //Starting the seekbarupdation runnable
+
                 handler.post(seekbarUpdation);
 
 
